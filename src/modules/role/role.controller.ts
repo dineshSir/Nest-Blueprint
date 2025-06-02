@@ -1,0 +1,43 @@
+import { Body, Controller, Post } from '@nestjs/common';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { RoleService } from './role.service';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { RequiredPermissions } from 'src/auth/decorators/permission.decorator';
+import { RolePermissions } from 'src/auth/enums/role-permission.enum';
+
+@Auth(AuthType.Bearer)
+@Controller('role')
+export class RoleController {
+  constructor(private readonly roleService: RoleService) {}
+
+  @RequiredPermissions(RolePermissions.createRole)
+  @Post()
+  async create(@Body() createRoleDto: CreateRoleDto) {
+    return this.roleService.create(createRoleDto);
+  }
+
+  // @RequirePermissions(UserPermissions.readRole)
+  // @Get()
+  // findAll() {
+  //   return this.roleService.findAll();
+  // }
+
+  // // @RequirePermissions(UserPermissions.readRole)
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.roleService.findOne(+id);
+  // }
+
+  // // @RequirePermissions(UserPermissions.updateRole)
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+  //   return this.roleService.update(+id, updateRoleDto);
+  // }
+
+  // // @RequirePermissions(UserPermissions.deleteRole)
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.roleService.remove(+id);
+  // }
+}
