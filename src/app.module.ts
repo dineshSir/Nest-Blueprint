@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { HashingModule } from './common/helper-modules/hashing/hashing.module';
 import { MailingModule } from './common/helper-modules/mailing/mailing.module';
@@ -10,20 +9,21 @@ import { DatabaseConnectionModule } from './database/database-connection.module'
 import { PermissionModule } from './modules/permission/permission.module';
 import { RoleModule } from './modules/role/role.module';
 import { UsersModule } from './modules/users/users.module';
+import { CloudinaryModule } from './common/helper-modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     ConfigurationModule,
     DatabaseConnectionModule,
+    RedisModule,
     MailingModule,
     SmsNepalModule,
+    CloudinaryModule,
     HashingModule,
     PermissionModule,
     RoleModule,
     UsersModule,
-    RedisModule,
     AuthModule,
   ],
-  providers: [],
 })
 export class AppModule {}

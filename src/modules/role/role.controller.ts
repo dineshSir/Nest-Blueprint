@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RoleService } from './role.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
@@ -17,11 +17,11 @@ export class RoleController {
     return this.roleService.create(createRoleDto);
   }
 
-  // @RequirePermissions(UserPermissions.readRole)
-  // @Get()
-  // findAll() {
-  //   return this.roleService.findAll();
-  // }
+  @RequiredPermissions(RolePermissions.readRole)
+  @Get()
+  findAll() {
+    return this.roleService.findAll();
+  }
 
   // // @RequirePermissions(UserPermissions.readRole)
   // @Get(':id')

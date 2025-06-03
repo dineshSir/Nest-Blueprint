@@ -1,26 +1,22 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Permission } from "./entities/permission.entity";
-import { Repository } from "typeorm";
-import { safeError } from "src/common/helper-functions/safe-error.helper";
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Permission } from './entities/permission.entity';
+import { Repository } from 'typeorm';
+import { safeError } from 'src/common/helper-functions/safe-error.helper';
 
 @Injectable()
 export class PermissionService {
   constructor(
     @InjectRepository(Permission)
-    private permissionRepository: Repository<Permission>
+    private permissionRepository: Repository<Permission>,
   ) {}
-  create() {
-    return "This action adds a new permission";
-  }
-
   async findAll() {
     const [permissions, error] = await safeError(
-      this.permissionRepository.find()
+      this.permissionRepository.find(),
     );
     if (error) {
       throw new InternalServerErrorException(
-        `Error While fetching permissions`
+        `Error While fetching permissions`,
       );
     }
     return {
@@ -30,15 +26,12 @@ export class PermissionService {
     };
   }
 
-  findOne() {
-    return `This action returns a permission`;
-  }
-
-  update() {
-    return `This action updates a permission`;
-  }
-
-  remove() {
-    return `This action removes a permission`;
+  async findOne(id: number) {
+    const [permission, error] = await safeError(
+      this.permissionRepository.findOne({
+        select: ['id', 'name'],
+        where: { id },
+      }),
+    );
   }
 }
