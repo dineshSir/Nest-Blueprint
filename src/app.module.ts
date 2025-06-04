@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { HashingModule } from './common/helper-modules/hashing/hashing.module';
 import { MailingModule } from './common/helper-modules/mailing/mailing.module';
@@ -10,6 +10,7 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { RoleModule } from './modules/role/role.module';
 import { UsersModule } from './modules/users/users.module';
 import { CloudinaryModule } from './common/helper-modules/cloudinary/cloudinary.module';
+import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,6 +25,17 @@ import { CloudinaryModule } from './common/helper-modules/cloudinary/cloudinary.
     RoleModule,
     UsersModule,
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useFactory: () =>
+        new ValidationPipe({
+          transform: true,
+          whitelist: true,
+          forbidNonWhitelisted: true,
+        }),
+    },
   ],
 })
 export class AppModule {}

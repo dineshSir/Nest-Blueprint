@@ -13,7 +13,7 @@ import { ConfigType } from '@nestjs/config';
 import { HashingService } from 'src/common/helper-modules/hashing/hashing.service';
 import { JwtService } from '@nestjs/jwt';
 import { runInTransaction } from 'src/common/helper-functions/transaction.helper';
-import { QueryRunner, Repository } from 'typeorm';
+import { In, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
@@ -22,6 +22,7 @@ import { randomUUID } from 'crypto';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { RefreshTokenIdsStorage } from 'src/common/helper-modules/redis/redis-refresh-token.service';
 import { ActiveUserData } from './interfaces/active-user-data.interfce';
+import { SignUpUserDto } from './dtos/sign-up-user.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -84,49 +85,52 @@ export class AuthenticationService {
     return message;
   }
 
-  async signUpAdmin(signUpDto: SignUpDto) {
+  async signUpUser(signUpUserDto: SignUpUserDto) {
     const [message, error] = await safeError(
       runInTransaction(async (queryRunner: QueryRunner) => {
-        const roleRepository = queryRunner.manager.getRepository(Role);
-        const [adminRole, _error] = await safeError(
-          roleRepository.findOne({
-            where: { name: 'admin' },
-          }),
-        );
-        if (_error)
-          throw new InternalServerErrorException(
-            `Error getting role to assign to the new user.`,
-          );
-        if (!adminRole)
-          throw new NotFoundException(
-            "Error assigning default 'regular' role to the user, check if the role exist.",
-          );
-
         const userRepository = queryRunner.manager.getRepository(User);
         const existingUser = await userRepository.findOne({
-          where: { email: signUpDto.email },
+          where: { email: signUpUserDto.email },
         });
         if (existingUser)
           throw new ConflictException(
             `Email already registered in the system.`,
           );
 
+        const roleRepository = queryRunner.manager.getRepository(Role);
+        const incommingRoleIds = signUpUserDto.roleIds.filter((id) => id !== 1); //dont allow to create a super user
+        const roleInstances = await queryRunner.manager.find(Role, {
+          where: { id: In(incommingRoleIds) },
+        });
+
+        const foundRoleIds = roleInstances.map(
+          (roleInstance: Role) => roleInstance.id,
+        );
+
+        const missingRoleIds = incommingRoleIds.filter(
+          (id: number) => !foundRoleIds.includes(id),
+        );
+        if (missingRoleIds.length > 0)
+          throw new NotFoundException(
+            `Role/s not found for id/s: ${missingRoleIds.join(', ')}`,
+          );
+
         const hashedPassword = await this.hashingService.hash(
-          signUpDto.password,
+          signUpUserDto.password,
         );
 
         const userInstance = Object.assign(new User(), {
-          email: signUpDto.email,
+          email: signUpUserDto.email,
           password: hashedPassword,
-          roles: [adminRole],
+          roles: roleInstances,
         });
 
         const user = userRepository.create(userInstance);
-        const savedAdminUser = await userRepository.save(user);
+        const savedUser = await userRepository.save(user);
 
         return {
           success: true,
-          message: `Admin User created and saved successfully.`,
+          message: `User created and saved successfully.`,
         };
       }),
     );

@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { omit } from 'lodash';
+import { isEqual, omit } from 'lodash';
 import { safeError } from 'src/common/helper-functions/safe-error.helper';
 import { runInTransaction } from 'src/common/helper-functions/transaction.helper';
 import { In, QueryRunner, Repository } from 'typeorm';
@@ -15,6 +15,7 @@ import { Permission } from '../permission/entities/permission.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Role } from './entities/role.entity';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdatedInterface } from 'src/common/interfaces/crud-response.interface';
 
 @Injectable()
 export class RoleService {
@@ -90,11 +91,12 @@ export class RoleService {
     const roleRepository = queryRunner
       ? queryRunner.manager.getRepository(Role)
       : this.roleRepository;
+
     const [role, error] = await safeError(
       roleRepository
         .createQueryBuilder('role')
         .leftJoinAndSelect('role.permissions', 'permission')
-        .where('vacancy.id = :id', { id })
+        .where('role.id = :id', { id })
         .select([
           'role.id',
           'role.name',
@@ -104,7 +106,9 @@ export class RoleService {
         ])
         .getOne(),
     );
+
     if (error) {
+      console.log(error);
       throw new InternalServerErrorException('Error while fetching roles');
     }
     if (!role) throw new NotFoundException(`Role with id : ${id} not found.`);
@@ -127,58 +131,57 @@ export class RoleService {
     return role;
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto) {
-    // const [message, error] = await safeError(
-    //   runInTransaction(async (queryRunner) => {
-    //     const roleRepository = queryRunner.manager.getRepository(Role);
-    //     const existingRole = await this.findOne(id, queryRunner);
-    //     const existingPermissionIds = existingRole.permissions.map(
-    //       (permission) => permission.id,
-    //     );
-    //     const incommingPermissionIds = updateRoleDto.permissionIds;
-    //     const role = this.findOne(id, queryRunner);
-    //     Object.assign(role, updateRoleDto);
-    //   }),
-    // );
-    // const role = await this.findOne(id);
-    // if (updateRoleDto.name) {
-    //   if (updateRoleDto.name !== role.name) {
-    //     const existingRole = await this.roleRepository.findOne({
-    //       where: { name: updateRoleDto.name },
-    //     });
-    //     if (existingRole) {
-    //       throw new ConflictException(
-    //         `Role ${updateRoleDto.name} already exists`,
-    //       );
-    //     }
-    //     role.name = updateRoleDto.name;
-    //   }
-    // }
-    // if (updateRoleDto.permissions) {
-    //   const [assignedPermissions, err] = await safeError(
-    //     this.permissionRepository.find({
-    //       where: { name: In(updateRoleDto.permissions) },
-    //     }),
-    //   );
-    //   if (!assignedPermissions) {
-    //     throw new BadRequestException('Invalid permissions');
-    //   }
-    //   if (
-    //     assignedPermissions.length === 0 ||
-    //     assignedPermissions.length !== updateRoleDto.permissions.length
-    //   ) {
-    //     throw new BadRequestException('Invalid permissions');
-    //   }
-    //   if (err) {
-    //     throw new InternalServerErrorException(
-    //       'Error while fetching permissions',
-    //     );
-    //   }
-    //   role.permissions = assignedPermissions;
-    // }
-    // return runInTransaction(async (queryRunner) =>
-    //   queryRunner.manager.save(Role, role),
-    // );
+  async update(
+    id: number,
+    updateRoleDto: UpdateRoleDto,
+  ): Promise<UpdatedInterface> {
+    const [message, error] = await safeError(
+      runInTransaction(async (queryRunner) => {
+        const roleRepository = queryRunner.manager.getRepository(Role);
+        const existingRole = await this.findOne(id, queryRunner);
+        const existingPermissionIds = existingRole.permissions.map(
+          (permission) => permission.id,
+        );
+        const incommingPermissionIds = updateRoleDto.permissionIds;
+
+        if (isEqual(existingPermissionIds, incommingPermissionIds)) {
+          Object.assign(existingRole, {
+            ...omit(updateRoleDto, ['permissionIds']),
+          });
+        } else {
+          const permissionRepository =
+            queryRunner.manager.getRepository(Permission);
+          const foundPermissionInstances = await permissionRepository.find({
+            where: { id: In(incommingPermissionIds) },
+          });
+          const foundPermissionIds = foundPermissionInstances.map(
+            (permission) => permission.id,
+          );
+          const missingPermissionIds = incommingPermissionIds.filter(
+            (id) => !foundPermissionIds.includes(id),
+          );
+          if (missingPermissionIds.length > 0)
+            throw new NotFoundException(
+              `Permissions with id's: ${missingPermissionIds.join(', ')} not found.`,
+            );
+          Object.assign(existingRole, {
+            ...omit(updateRoleDto, ['permissionIds']),
+            permissions: foundPermissionInstances,
+          });
+        }
+        const toUpdateVacancy = roleRepository.create(existingRole);
+        const updatedRole = await queryRunner.manager.save(toUpdateVacancy);
+        return {
+          success: true,
+          message: `Role updated successfully.`,
+        };
+      }),
+    );
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    return message;
   }
 
   async remove(id: number): Promise<{ success: boolean; message: string }> {

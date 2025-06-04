@@ -1,7 +1,7 @@
-import { CommonEntity } from "src/common/entities/common.entity";
-import { Permission } from "src/modules/permission/entities/permission.entity";
-import { User } from "src/modules/users/entities/user.entity";
-import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { CommonEntity } from 'src/common/entities/common.entity';
+import { Permission } from 'src/modules/permission/entities/permission.entity';
+import { User } from 'src/modules/users/entities/user.entity';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Role extends CommonEntity {
@@ -13,20 +13,18 @@ export class Role extends CommonEntity {
 
   @ManyToMany(() => User, (user) => user.roles)
   @JoinTable({
-    name: "user_roles",
+    name: 'user_roles',
     joinColumn: {
-      name: "role_id",
-      referencedColumnName: "id",
+      name: 'role_id',
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: "user_id",
-      referencedColumnName: "id",
+      name: 'user_id',
+      referencedColumnName: 'id',
     },
   })
   users: User[];
 
-  @ManyToMany(() => Permission, (permission) => permission.roles, {
-    onDelete: "CASCADE",
-  })
+  @ManyToMany(() => Permission, (permission) => permission.roles)
   permissions: Permission[];
 }

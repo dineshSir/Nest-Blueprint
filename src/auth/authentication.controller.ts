@@ -14,6 +14,7 @@ import { Auth } from './decorators/auth.decorator';
 import { AuthType } from './enums/auth-type.enum';
 import { RequiredPermissions } from './decorators/permission.decorator';
 import { RolePermissions } from './enums/role-permission.enum';
+import { SignUpUserDto } from './dtos/sign-up-user.dto';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -25,10 +26,11 @@ export class AuthenticationController {
   }
 
   @Auth(AuthType.Bearer)
-  @RequiredPermissions(RolePermissions.createAdmin)
-  @Post('sign-up-admin')
-  signUpAdmin(@Body() signUpDto: SignUpDto) {
-    return this.authenticationService.signUpAdmin(signUpDto);
+  @Post('sign-up-user')
+  @RequiredPermissions(RolePermissions.createUser)
+  signUpUser(@Body() signUpUserDto: SignUpUserDto) {
+    console.log('hello');
+    return this.authenticationService.signUpUser(signUpUserDto);
   }
 
   @Auth(AuthType.None)

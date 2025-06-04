@@ -1,6 +1,4 @@
 export enum RolePermissions {
-  createAdmin = 'crate_admin',
-
   createUser = 'create_user',
   readUser = 'read_user',
   updateUser = 'update_user',
