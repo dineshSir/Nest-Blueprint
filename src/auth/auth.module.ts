@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import jwtConfig from 'src/configurations/jwt.config';
 import { Role } from 'src/modules/role/entities/role.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
 import redisConfig from 'src/configurations/redis.config';

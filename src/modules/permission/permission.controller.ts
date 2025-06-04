@@ -1,9 +1,9 @@
-import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { PermissionService } from './permission.service';
+import { Controller, Get, Param } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RequiredPermissions } from 'src/auth/decorators/permission.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { RolePermissions } from 'src/auth/enums/role-permission.enum';
-import { RequiredPermissions } from 'src/auth/decorators/permission.decorator';
+import { PermissionService } from './permission.service';
 
 @Auth(AuthType.Bearer)
 @RequiredPermissions(RolePermissions.readPermission)

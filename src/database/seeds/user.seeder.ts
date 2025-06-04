@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { genSalt, hash } from 'bcryptjs';
 import { Role } from 'src/modules/role/entities/role.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 

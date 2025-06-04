@@ -15,7 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { runInTransaction } from 'src/common/helper-functions/transaction.helper';
 import { In, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
 import { SignInDto } from './dtos/sign-in.dto';
 import { randomUUID } from 'crypto';

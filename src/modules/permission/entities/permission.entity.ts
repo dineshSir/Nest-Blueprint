@@ -1,6 +1,6 @@
-import { CommonEntity } from "src/common/entities/common.entity";
-import { Role } from "src/modules/role/entities/role.entity";
-import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { CommonEntity } from 'src/common/entities/common.entity';
+import { Role } from 'src/modules/role/entities/role.entity';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Permission extends CommonEntity {
@@ -9,14 +9,14 @@ export class Permission extends CommonEntity {
 
   @ManyToMany(() => Role, (role) => role.permissions)
   @JoinTable({
-    name: "role_permissions",
+    name: 'role_permissions',
     joinColumn: {
-      name: "permission_id",
-      referencedColumnName: "id",
+      name: 'permission_id',
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: "role_id",
-      referencedColumnName: "id",
+      name: 'role_id',
+      referencedColumnName: 'id',
     },
   })
   roles: Role[];

@@ -8,9 +8,9 @@ import { ConfigurationModule } from './configurations/configuration.module';
 import { DatabaseConnectionModule } from './database/database-connection.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { RoleModule } from './modules/role/role.module';
-import { UsersModule } from './modules/users/users.module';
 import { CloudinaryModule } from './common/helper-modules/cloudinary/cloudinary.module';
 import { APP_PIPE } from '@nestjs/core';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { APP_PIPE } from '@nestjs/core';
     HashingModule,
     PermissionModule,
     RoleModule,
-    UsersModule,
+    UserModule,
     AuthModule,
   ],
   providers: [

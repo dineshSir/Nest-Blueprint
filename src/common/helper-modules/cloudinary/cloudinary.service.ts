@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary, UploadApiErrorResponse } from 'cloudinary';
 import { extname } from 'path';
-import { CloudinaryResponse } from 'src/common/interfaces/cloudinary-response.interface';
+import { CloudinaryResponseInterface } from 'src/common/interfaces/cloudinary-response.interface';
 import { DeletedInterface } from 'src/common/interfaces/crud-response.interface';
 const streamifier = require('streamifier');
 
@@ -23,8 +23,8 @@ export class CloudinaryService {
   uploadFile(
     directory: string,
     file: Express.Multer.File,
-  ): Promise<CloudinaryResponse | UploadApiErrorResponse> {
-    return new Promise<CloudinaryResponse | UploadApiErrorResponse>(
+  ): Promise<CloudinaryResponseInterface | UploadApiErrorResponse> {
+    return new Promise<CloudinaryResponseInterface | UploadApiErrorResponse>(
       (resolve, reject) => {
         const [yearNow, monthNow, dayNow] = [
           new Date().getFullYear(),
