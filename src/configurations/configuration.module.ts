@@ -17,6 +17,9 @@ import * as Joi from 'joi';
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
 
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().default(6379),
+
         JWT_SECRET: Joi.string().required(),
         JWT_TOKEN_ISSUER: Joi.string().required(),
         JWT_TOKEN_AUDIENCE: Joi.string().required(),

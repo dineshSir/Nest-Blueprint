@@ -23,7 +23,7 @@ export class RoleService {
   ) {}
   async create(
     createRoleDto: CreateRoleDto,
-  ): Promise<{ success: boolean; message: string } | null> {
+  ): Promise<{ success: boolean; message: string }> {
     const [message, error] = await safeError(
       runInTransaction(async (queryRunner) => {
         const roleExists = await this.findWithName(
@@ -69,7 +69,7 @@ export class RoleService {
       }),
     );
     if (error instanceof HttpException) throw error;
-    return message;
+    return message!;
   }
 
   async findAll(): Promise<Role[]> {

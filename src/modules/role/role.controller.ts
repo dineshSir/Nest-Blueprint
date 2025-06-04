@@ -1,12 +1,13 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RequiredPermissions } from 'src/auth/decorators/permission.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { RolePermissions } from 'src/auth/enums/role-permission.enum';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RoleService } from './role.service';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { AuthType } from 'src/auth/enums/auth-type.enum';
-import { RequiredPermissions } from 'src/auth/decorators/permission.decorator';
-import { RolePermissions } from 'src/auth/enums/role-permission.enum';
 
-@Auth(AuthType.Bearer)
+// @Auth(AuthType.Bearer)
+@Auth(AuthType.None)
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
@@ -17,11 +18,11 @@ export class RoleController {
     return this.roleService.create(createRoleDto);
   }
 
-  @RequiredPermissions(RolePermissions.readRole)
-  @Get()
-  findAll() {
-    return this.roleService.findAll();
-  }
+  // @RequiredPermissions(RolePermissions.readRole)
+  // @Get()
+  // findAll() {
+  //   return this.roleService.findAll();
+  // }
 
   // // @RequirePermissions(UserPermissions.readRole)
   // @Get(':id')
