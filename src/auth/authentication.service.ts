@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { safeError } from 'src/common/helper-functions/safe-error.helper';
 import { SignUpDto } from './dtos/sign-up.dto';
-import jwtConfig from 'src/configurations/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { HashingService } from 'src/common/helper-modules/hashing/hashing.service';
 import { JwtService } from '@nestjs/jwt';
@@ -23,6 +22,7 @@ import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { RefreshTokenIdsStorage } from 'src/common/helper-modules/redis/redis-refresh-token.service';
 import { ActiveUserData } from './interfaces/active-user-data.interfce';
 import { SignUpUserDto } from './dtos/sign-up-user.dto';
+import { jwtConfig } from 'src/configurations/jwt.config';
 
 @Injectable()
 export class AuthenticationService {
