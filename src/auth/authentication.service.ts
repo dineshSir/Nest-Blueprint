@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { safeError } from 'src/common/helper-functions/safe-error.helper';
 import { SignUpDto } from './dtos/sign-up.dto';
-import { ConfigType } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { HashingService } from 'src/common/helper-modules/hashing/hashing.service';
 import { JwtService } from '@nestjs/jwt';
 import { runInTransaction } from 'src/common/helper-functions/transaction.helper';
@@ -33,6 +33,7 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
+    private readonly configService: ConfigService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {

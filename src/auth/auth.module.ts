@@ -13,6 +13,7 @@ import { PermissionGuard } from './guards/permissions.guard';
 import { jwtConfig } from 'src/configurations/jwt.config';
 import { redisConfig } from 'src/configurations/redis.config';
 
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),

@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { SmsNepalService } from './sms.nepal.service';
+import { SmsNepalService } from './sms-nepal.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SmsHistory } from './entities/sms-history.entity';
 

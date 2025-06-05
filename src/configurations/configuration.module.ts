@@ -31,6 +31,9 @@ import * as Joi from 'joi';
         MAIL_PORT: Joi.number().default(587),
         MAIL_SECURE: Joi.boolean().default(false),
         MAIL_USER: Joi.string().required(),
+
+        KHALTI_SECRET_KEY: Joi.string().required(),
+        KHALTI_PAYMENT_MODE: Joi.string().required(),
       }),
     }),
   ],
